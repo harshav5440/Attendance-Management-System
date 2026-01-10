@@ -1,0 +1,51 @@
+import java.sql.*;
+import java.io.FileWriter;
+
+public class AttendanceApp {
+
+    public static void main(String[] args) {
+
+        String url = "jdbc:mysql://localhost:3306/attendance_db";
+        String user = "root";        // change if needed
+        String password = "root";    // change if needed
+
+        try {
+            Connection con = DriverManager.getConnection(url, user, password);
+            System.out.println("Database Connected Successfully!");
+
+            String query =
+                "SELECT s.student_id, s.name, " +
+                "IFNULL(COUNT(CASE WHEN a.status='Present' THEN 1 END) * 100.0 / COUNT(a.attendance_id), 0) AS percentage " +
+                "FROM students s LEFT JOIN attendance a " +
+                "ON s.student_id = a.student_id " +
+                "GROUP BY s.student_id";
+
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+
+            System.out.println("\nAttendance Report:");
+            System.out.println("ID | Name | Percentage");
+
+            FileWriter writer = new FileWriter("reports/attendance_report.csv");
+            writer.write("ID,Name,Attendance%\n");
+
+            while (rs.next()) {
+                int id = rs.getInt("student_id");
+                String name = rs.getString("name");
+                double percent = rs.getDouble("percentage");
+
+                System.out.println(id + " | " + name + " | " + percent + "%");
+
+                writer.write(id + "," + name + "," + percent + "\n");
+            }
+
+            writer.close();
+            con.close();
+
+            System.out.println("\nCSV Report Generated Successfully!");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
