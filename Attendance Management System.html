@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Attendance Management System</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f3f4f6;
+}
+
+header {
+    background: #0f172a;
+    color: white;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+header img {
+    width: 50px;
+    height: 50px;
+}
+
+header h1 {
+    margin: 0;
+}
+
+.container {
+    width: 85%;
+    margin: 30px auto;
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+h2 {
+    color: #1f2937;
+    margin-bottom: 15px;
+}
+
+form {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+input {
+    padding: 10px;
+    width: 200px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    padding: 10px 15px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+th {
+    background: #e5e7eb;
+}
+
+.actions {
+    margin-top: 20px;
+    text-align: right;
+}
+
+.footer {
+    margin-top: 40px;
+    text-align: center;
+    color: gray;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <!-- Embedded Image (icon) -->
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsSAAALEgHS3X78AAAAr0lEQVR4nO3YMQrCQBBF0X+I6sY0MZ3A0p3EwFZ3E4g4y9P2s+H2SSBBk3fI9rZ2dndJ3xq+5fCwDg9k6cI6JwTtYwB8M6sM0YgA1s4k9R4Qw5Zp9wYgG5s4x+U8A0Zk6Rkq9wA1sY8J3kYgB1s4M9Q4Qw5Zp9wYgG5s4x+U8A0Zk6Rkq9wAAAAASUVORK5CYII=">
+    <div>
+        <h1>Attendance Management System</h1>
+        <p>Automated Attendance Tracking & Reporting</p>
+    </div>
+</header>
+
+<div class="container">
+
+    <h2>Add Student Attendance</h2>
+
+    <form id="attendanceForm">
+        <input type="text" id="name" placeholder="Student Name" required>
+        <input type="number" id="total" placeholder="Total Classes" required>
+        <input type="number" id="attended" placeholder="Attended Classes" required>
+        <button type="submit">Add Record</button>
+    </form>
+
+    <h2>Attendance Records</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Student</th>
+                <th>Total Classes</th>
+                <th>Attended</th>
+                <th>Attendance %</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+
+    <div class="actions">
+        <button onclick="downloadCSV()">Download CSV</button>
+        <button onclick="generatePDF()">Generate PDF</button>
+    </div>
+
+</div>
+
+<div class="footer">
+    <p>© 2026 Attendance Management System | Java • MySQL • Frontend Demo</p>
+</div>
+
+<script>
+let records = [];
+const form = document.getElementById("attendanceForm");
+const tableBody = document.getElementById("tableBody");
+
+form.addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value;
+    const total = parseInt(document.getElementById("total").value);
+    const attended = parseInt(document.getElementById("attended").value);
+
+    const percentage = ((attended / total) * 100).toFixed(2);
+
+    const record = { name, total, attended, percentage };
+    records.push(record);
+
+    const row = document.createElement("tr");
+    row.innerHTML = `
+        <td>${name}</td>
+        <td>${total}</td>
+        <td>${attended}</td>
+        <td>${percentage}%</td>
+    `;
+    tableBody.appendChild(row);
+
+    form.reset();
+});
+
+function downloadCSV() {
+    let csv = "Name,Total,Attended,Percentage\n";
+    records.forEach(r => {
+        csv += `${r.name},${r.total},${r.attended},${r.percentage}%\n`;
+    });
+
+    const blob = new Blob([csv], { type: "text/csv" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "attendance_report.csv";
+    link.click();
+}
+
+function generatePDF() {
+    alert("PDF generation can be implemented using jsPDF or backend service.");
+}
+</script>
+
+</body>
+</html>
